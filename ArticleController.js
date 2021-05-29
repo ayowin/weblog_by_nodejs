@@ -156,8 +156,6 @@ class ArticleController{
                     }
 
                     if(result.length > 0) {
-                        console.log(result[0]);
-                        console.log(result[0]['content_file_path']);
                         fileSystem.readFile(result[0]['content_file_path'], function (error, data) {
                             var responseContent = new Object();
                             if (error) {
