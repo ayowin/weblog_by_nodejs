@@ -52,7 +52,7 @@ class ArticleController{
                             responseContent.topics[i].id = result[i]['id'];
                             responseContent.topics[i].topic = result[i]['topic'];
                             responseContent.topics[i].user = result[i]['user'];
-                            responseContent.topics[i].updateTime = result[i]['update_time'];
+                            responseContent.topics[i].updateTime = result[i]['update_time'].toLocaleString();
                         }
                         responseContent = JSON.stringify(responseContent);
                         response.end(responseContent);
