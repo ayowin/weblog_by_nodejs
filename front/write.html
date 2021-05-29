@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创作</title>
+    <style>
+        html body{
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            text-align: center;
+        }
+        #topicInput{
+            width: 99%;
+            height: 30px;
+            margin: 5px 0px 5px 0px;
+            font-size: 18px;
+        }
+        #ueditorDiv{
+            text-align: left;
+            height: 100%;
+        }
+        #submitButton{
+            margin-top: 20px;
+            height: 30px;
+            width: 100px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <input id="topicInput" type="text" placeholder="请输入文章标题" />
+    <div id="ueditorDiv"></div>
+    <button id="submitButton">提交</button>
+
+    <!-- 导入jquery -->
+    <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.6.0.js"></script>
+    <!-- 导入wangEditor -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/wangeditor@latest/dist/wangEditor.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            /* 登录检测 */
+            var user = window.sessionStorage.getItem('user');
+            if(user == null || typeof(user) == "undefined"){
+                /* 未登录 */
+                alert("请您先登录！");
+                window.location.href = "index.html";
+                return;
+            }
+
+            /* 创建wangEditor */
+            var E = window.wangEditor;
+            var editor = new E(document.getElementById('ueditorDiv'));
+            editor.config.height = document.documentElement.clientHeight - 150; /* 编辑器高度 */
+            editor.config.uploadImgShowBase64 = true; /* 以base64形式上传图片 */
+            editor.create();
+            /* wangEditor高度自适应*/
+            window.onresize = function(){
+                var currentHeight = document.documentElement.clientHeight - 150;
+                console.log(editor);
+                $(".w-e-text-container").css("height",currentHeight + "px");
+            }
+
+            /* submit按钮按下，取出html形式的字符串，打印到控制台、渲染到contentDiv */
+            $("#submitButton").click(function(){
+                var requestData = new Object();
+                requestData.user = user;
+                requestData.topic = $('#topicInput').val();
+                requestData.content = editor.txt.html();
+
+                if(requestData.user == '' || requestData.topic == '' || requestData.content == ''){
+                    alert("标题和内容均不能为空！");
+                    return;
+                }
+                
+                var url = "http://127.0.0.1:80";
+                url += "/write";
+                $.post(url,JSON.stringify(requestData),function(response){
+                    var result = JSON.parse(response);
+                    if(result.result == "success"){
+                        alert("提交成功");
+                        window.location.href = "home.html";
+                        return;
+                    }
+
+                    alert("提交失败，请联系管理员！");
+                });
+            });
+        });
+    </script>
+</body>
+</html>
